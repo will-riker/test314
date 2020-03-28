@@ -7,7 +7,26 @@ on:
     branches:
       - master
 jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    name: create dummy artifacts
+    steps:
+      - name: create two dummy files
+        run: |
+          echo test > test1.txt
+          echo test2 > test2.txt
+      - name: upload dummy artifact 1
+        uses: actions/upload-artifact@v1
+        with:
+          name: test1
+          path: ./test1.txt
+      - name: upload dummy artifact 2
+        uses: actions/upload-artifact@v1
+        with:
+          name: test2
+          path: ./test2.txt      
   cleanup:
+    needs: build-and-deploy
     if: always()
     runs-on: ubuntu-latest
     steps:
