@@ -1,0 +1,22 @@
+name: Build and Deploy
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+jobs:
+  cleanup:
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Cleanup Workflow
+        run: |
+          echo ::add-mask::${{ secrets.ACCESS_TOKEN }}
+          curl --verbose --fail --show-error --location --request \
+            POST "https://api.github.com/repos/${{ github.repository }}/dispatches" \
+            --header "Authorization: token ${{ secrets.ACCESS_TOKEN }}" \
+            --header 'Content-Type: application/json' \
+            --header 'Accept: application/vnd.github.everest-preview+json' \
+            --data-raw "{\"event_type\": \"delete_all_artifacts\", \"client_payload\": {\"parent_runid\": \"${{ github.run_id }}\", \"parent_repo\": \"${{ github.repository }}\"}}"
